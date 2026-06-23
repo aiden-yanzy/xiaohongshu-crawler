@@ -1,0 +1,4 @@
+{
+  "extensions": [".pi/extensions/rednote-crawler.ts"],
+  "skills": [".pi/skills/rednote-crawler"]
+}

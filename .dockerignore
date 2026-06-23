@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Git
+.git/
+.gitignore
+
+# 数据目录（运行时由 volume 提供）
+data/
+auth_state/
+logs/
+
+# 测试和开发
+tests/
+scripts/
+*.md
+CLAUDE.md
+README.md
+
+# IDE 和工具
+.vscode/
+.idea/
+.pi/
+.reports/
+.plan/
+.pytest_cache/
+.coverage
+
+# 临时文件
+*.tmp
+*.log

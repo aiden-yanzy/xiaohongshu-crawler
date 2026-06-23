@@ -1,0 +1,29 @@
+# Docker Compose — 登录模式（带 noVNC 远程桌面）
+#
+# 启动：
+#   docker compose -f docker-compose.login.yml up --build
+#
+# 浏览器打开 http://服务器IP:18766 在 VNC 中完成扫码登录
+# 登录完成后 Ctrl+C 停止，再启动正常服务：
+#   docker compose up -d
+
+services:
+  login:
+    build:
+      context: .
+      dockerfile: Dockerfile.login
+    container_name: rednote-login
+    ports:
+      # noVNC Web 界面 — 映射到主机 18766 端口
+      - "18766:6080"
+    volumes:
+      - ./auth_state:/app/auth_state
+    networks:
+      - rednote-net
+    environment:
+      - TZ=Asia/Shanghai
+    shm_size: "1gb"
+
+networks:
+  rednote-net:
+    driver: bridge

@@ -1,0 +1,28 @@
+services:
+  rednote-crawler:
+    build: .
+    container_name: rednote-crawler
+    restart: unless-stopped
+    ports:
+      # MCP SSE 服务 — 映射到主机的 18765 端口
+      - "18765:8000"
+    volumes:
+      - ./auth_state:/app/auth_state
+      - ./data:/app/data
+      - ./logs:/app/logs
+    environment:
+      - TZ=Asia/Shanghai
+    # 加入自定义网络，方便其他容器通过服务名访问
+    networks:
+      - rednote-net
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: "2"
+    shm_size: "1gb"
+
+# 自定义网络 — 其他容器可通过 rednote-crawler:8000 访问
+networks:
+  rednote-net:
+    driver: bridge
