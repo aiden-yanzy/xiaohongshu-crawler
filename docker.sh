@@ -17,7 +17,7 @@ case "${1:-help}" in
     TAG="${2:-latest}"
     IMAGE="ghcr.io/aiden-yanzy/rednote-crawler:$TAG"
     echo "📦 构建 AMD64 镜像并推送 $IMAGE ..."
-    docker build --platform linux/amd64 -t "$IMAGE" "$PROJECT_DIR"
+    docker build --pull=false --platform linux/amd64 -t "$IMAGE" "$PROJECT_DIR"
     docker push "$IMAGE"
     echo "✅ 已推送，NAS 上执行："
     echo "   docker pull $IMAGE"
