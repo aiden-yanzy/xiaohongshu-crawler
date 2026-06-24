@@ -122,20 +122,18 @@ _session = CrawlerSession(headless=True)
 async def lifespan(server: FastMCP) -> AsyncGenerator[None, None]:
     """MCP 服务启停钩子：管理浏览器生命周期。
 
-    服务启动时初始化浏览器并启用文件日志，服务关闭时释放资源。
+    浏览器在 SSE Transport 首次连接时启动，并保持运行直到进程退出。
+    不再随单个 SSE 连接关闭而停止，避免 Hermes 多连接场景下反复启停。
     """
-    # Phase D: 启动时配置文件日志
+    # 首次连接时启动日志和浏览器（start() 幂等，重复调用安全）
     setup_file_logging()
-
-    logger.info("rednote-crawler MCP 服务启动中...")
     await _session.start()
-    logger.info("rednote-crawler MCP 服务就绪（浏览器已启动）")
     try:
         yield
     finally:
-        logger.info("rednote-crawler MCP 服务关闭中...")
-        await _session.stop()
-        logger.info("rednote-crawler MCP 服务已关闭")
+        # 不关闭浏览器！保持运行给后续 SSE 连接复用
+        # 进程退出时 Docker 会自动回收子进程，Playwright 浏览器也会随之终止
+        logger.debug("SSE 连接关闭（浏览器保持运行）")
 
 
 # ---- 创建 MCP 服务实例 ----
