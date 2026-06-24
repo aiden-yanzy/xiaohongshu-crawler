@@ -8,7 +8,13 @@ CONTAINER="rednote-crawler"
 
 case "${1:-help}" in
   build)
-    echo "🔨 构建 Docker 镜像..."
+    # 基础镜像不存在则先构建（仅首次或依赖变更时）
+    if ! docker image inspect rednote-crawler-base:latest > /dev/null 2>&1; then
+        echo "🔨 首次构建基础镜像（系统依赖 + Chromium，仅此一次）..."
+        docker build -f "$PROJECT_DIR/Dockerfile.base" -t rednote-crawler-base:latest "$PROJECT_DIR"
+        echo "✅ 基础镜像构建完成"
+    fi
+    echo "🔨 构建应用镜像..."
     docker compose -f "$PROJECT_DIR/docker-compose.yml" build
     echo "✅ 构建完成"
     ;;
