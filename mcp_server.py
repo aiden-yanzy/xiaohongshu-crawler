@@ -440,14 +440,38 @@ def main() -> None:
         logger.info("以 stdio 模式启动 MCP 服务")
         mcp.run()
     else:
-        # SSE / Streamable HTTP 模式：更新监听地址后启动
+        # SSE / Streamable HTTP 模式：手动创建 uvicorn，放开 Host 校验
+        # Docker 容器间通信需要 forwarded_allow_ips / proxy_headers
+        # FastMCP 自带 transport_security，需配置 allowed_hosts
+        import uvicorn
+        from mcp.server.transport_security import TransportSecuritySettings
+
         mcp.settings.host = args.host
         mcp.settings.port = args.port
+
+        # 放开 FastMCP 的 Host 校验
+        mcp.settings.transport_security = TransportSecuritySettings(
+            enable_dns_rebinding_protection=False,
+            allowed_hosts=["*"],
+            allowed_origins=["*"],
+        )
+
+        if args.transport == "sse":
+            app = mcp.sse_app()
+        else:
+            app = mcp.streamable_http_app()
+
         logger.info(
             "以 %s 模式启动 MCP 服务（%s:%d）",
             args.transport, args.host, args.port,
         )
-        mcp.run(transport=args.transport)
+        uvicorn.run(
+            app,
+            host="0.0.0.0",
+            port=args.port,
+            forwarded_allow_ips="*",
+            proxy_headers=True,
+        )
 
 
 # ============================================================

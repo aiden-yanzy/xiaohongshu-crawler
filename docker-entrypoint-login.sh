@@ -26,7 +26,7 @@ sleep 2
 echo "✅ noVNC 启动 (端口 6080)"
 echo ""
 echo "============================================"
-echo "  👉 浏览器打开 http://$(hostname -I 2>/dev/null || echo '服务器IP'):18766"
+echo "  👉 浏览器打开 http://服务器IP:18766"
 echo "  在 VNC 窗口中完成小红书扫码登录"
 echo "  登录完成后按 Ctrl+C 退出"
 echo "  登录态会自动保存到 auth_state/state.json"

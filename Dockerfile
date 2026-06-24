@@ -50,7 +50,7 @@ EXPOSE 8000
 
 # 健康检查（SSE 是长连接，用超时方式检测端口可达性）
 HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
-    CMD curl -sf --max-time 3 http://localhost:8000/sse || [ $? -eq 28 ] || exit 1
+    CMD curl -sf --max-time 3 http://127.0.0.1:8000/sse || [ $? -eq 28 ] || exit 1
 
 # 启动 MCP 服务（SSE transport）
 ENV PYTHONUNBUFFERED=1
