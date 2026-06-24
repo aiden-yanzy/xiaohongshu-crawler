@@ -8,15 +8,24 @@ CONTAINER="rednote-crawler"
 
 case "${1:-help}" in
   build)
-    # 基础镜像不存在则先构建（仅首次或依赖变更时）
-    if ! docker image inspect rednote-crawler-base:latest > /dev/null 2>&1; then
-        echo "🔨 首次构建基础镜像（系统依赖 + Chromium，仅此一次）..."
-        docker build -f "$PROJECT_DIR/Dockerfile.base" -t rednote-crawler-base:latest "$PROJECT_DIR"
-        echo "✅ 基础镜像构建完成"
-    fi
-    echo "🔨 构建应用镜像..."
+    echo "🔨 构建 Docker 镜像..."
     docker compose -f "$PROJECT_DIR/docker-compose.yml" build
     echo "✅ 构建完成"
+    ;;
+
+  push)
+    TAG="${2:-latest}"
+    IMAGE="ghcr.io/aiden-yanzy/rednote-crawler:$TAG"
+    echo "📦 跨平台构建并推送 $IMAGE ..."
+    docker buildx build \
+        --platform linux/amd64,linux/arm64 \
+        -t "$IMAGE" \
+        --push \
+        "$PROJECT_DIR"
+    echo "✅ 已推送，NAS 上执行："
+    echo "   docker pull $IMAGE"
+    echo "   docker tag $IMAGE rednote-crawler:latest"
+    echo "   docker compose up -d"
     ;;
 
   up|start)
@@ -58,9 +67,10 @@ case "${1:-help}" in
     ;;
 
   *)
-    echo "用法: $0 {build|start|stop|restart|logs|status}"
+    echo "用法: $0 {build|push|start|stop|restart|logs|status}"
     echo ""
-    echo "  build    - 构建 Docker 镜像"
+    echo "  build    - 本地构建 Docker 镜像"
+    echo "  push     - 跨平台构建并推送到 GHCR（供 NAS 拉取）"
     echo "  start    - 启动 MCP 服务 (后台运行)"
     echo "  stop     - 停止 MCP 服务"
     echo "  restart  - 重启 MCP 服务"
