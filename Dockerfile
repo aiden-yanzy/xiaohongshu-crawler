@@ -1,7 +1,8 @@
 # rednote-crawler Docker 部署
 
 # ---- 构建阶段（仅安装 Python 依赖）----
-FROM python:3.10-slim AS builder
+# digest 锁定避免每次拉取新版本导致缓存失效
+FROM python:3.10-slim@sha256:fa184fce49c170a8b1032a4f752f9fe1a7e463e7f5795a3952ca275e166fa913 AS builder
 
 WORKDIR /app
 
@@ -10,7 +11,7 @@ COPY pyproject.toml uv.lock ./
 RUN uv sync --frozen --no-dev --no-install-project
 
 # ---- 运行阶段 ----
-FROM python:3.10-slim
+FROM python:3.10-slim@sha256:fa184fce49c170a8b1032a4f752f9fe1a7e463e7f5795a3952ca275e166fa913
 
 WORKDIR /app
 
