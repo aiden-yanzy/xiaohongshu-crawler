@@ -16,27 +16,9 @@ case "${1:-help}" in
   push)
     TAG="${2:-latest}"
     IMAGE="ghcr.io/aiden-yanzy/rednote-crawler:$TAG"
-    echo "📦 跨平台构建并推送 $IMAGE ..."
-
-    # 确保 buildx builder 存在
-    if ! docker buildx inspect xiaohongshu > /dev/null 2>&1; then
-        docker buildx create --name xiaohongshu --use
-    else
-        docker buildx use xiaohongshu
-    fi
-
-    # 默认构建 amd64（NAS 架构），也可传第二个参数指定平台
-    # 例: ./docker.sh push latest linux/amd64,linux/arm64
-    PLATFORM="${3:-linux/amd64}"
-
-    docker buildx build \
-        --builder xiaohongshu \
-        --platform "$PLATFORM" \
-        -t "$IMAGE" \
-        --push \
-        "$PROJECT_DIR"
-
-    docker buildx use default
+    echo "📦 构建 AMD64 镜像并推送 $IMAGE ..."
+    docker build --platform linux/amd64 -t "$IMAGE" "$PROJECT_DIR"
+    docker push "$IMAGE"
     echo "✅ 已推送，NAS 上执行："
     echo "   docker pull $IMAGE"
     echo "   docker tag $IMAGE rednote-crawler:latest"
