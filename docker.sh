@@ -25,9 +25,13 @@ case "${1:-help}" in
         docker buildx use xiaohongshu
     fi
 
+    # 默认构建 amd64（NAS 架构），也可传第二个参数指定平台
+    # 例: ./docker.sh push latest linux/amd64,linux/arm64
+    PLATFORM="${3:-linux/amd64}"
+
     docker buildx build \
         --builder xiaohongshu \
-        --platform linux/amd64,linux/arm64 \
+        --platform "$PLATFORM" \
         -t "$IMAGE" \
         --push \
         "$PROJECT_DIR"
