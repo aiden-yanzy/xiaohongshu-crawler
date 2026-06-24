@@ -9,7 +9,7 @@ CONTAINER="rednote-crawler"
 case "${1:-help}" in
   build)
     echo "🔨 构建 Docker 镜像..."
-    docker build -t "$IMAGE" "$PROJECT_DIR"
+    docker compose -f "$PROJECT_DIR/docker-compose.yml" build --pull missing
     echo "✅ 构建完成"
     ;;
 
