@@ -1,6 +1,6 @@
 services:
   rednote-crawler:
-    build: .
+    image: ghcr.io/aiden-yanzy/xiaohongshu-crawler:latest
     container_name: rednote-crawler
     restart: unless-stopped
     ports:
